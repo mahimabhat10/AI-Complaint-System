@@ -40,6 +40,8 @@ function ComplaintForm() {
 
       alert("Complaint Submitted");
 
+      window.location.href = "/complaints";
+
     } catch (error) {
 
       console.log(error);

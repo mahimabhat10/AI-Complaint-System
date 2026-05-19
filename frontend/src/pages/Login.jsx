@@ -1,7 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
+
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -33,6 +36,8 @@ function Login() {
       );
 
       alert("Login Successful");
+
+      navigate("/");
 
     } catch (error) {
 
@@ -76,6 +81,27 @@ function Login() {
           </button>
 
         </form>
+
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "20px"
+          }}
+        >
+          New User?{" "}
+
+          <Link
+            to="/signup"
+            style={{
+              color: "#7b2cbf",
+              fontWeight: "bold",
+              textDecoration: "none"
+            }}
+          >
+            Signup Here
+          </Link>
+
+        </p>
 
       </div>
 

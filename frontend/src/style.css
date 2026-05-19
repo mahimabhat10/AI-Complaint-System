@@ -57,3 +57,14 @@ body{
 .button:hover{
   background:#7b2cbf;
 }
+.logout-btn{
+  position:absolute;
+  top:20px;
+  right:20px;
+  background:#9d4edd;
+  color:white;
+  border:none;
+  padding:10px 20px;
+  border-radius:10px;
+  cursor:pointer;
+}

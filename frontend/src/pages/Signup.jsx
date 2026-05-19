@@ -1,7 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 function Signup() {
+
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -29,6 +32,8 @@ function Signup() {
       );
 
       alert("Signup Successful");
+
+      navigate("/login");
 
     } catch (error) {
       console.log(error);
@@ -79,6 +84,27 @@ function Signup() {
           </button>
 
         </form>
+
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "20px"
+          }}
+        >
+          Already have an account?{" "}
+
+          <Link
+            to="/login"
+            style={{
+              color: "#7b2cbf",
+              fontWeight: "bold",
+              textDecoration: "none"
+            }}
+          >
+            Login Here
+          </Link>
+
+        </p>
 
       </div>
 

@@ -1,4 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate
+} from "react-router-dom";
 
 import ComplaintForm from "./pages/ComplaintForm";
 import ComplaintList from "./pages/ComplaintList";
@@ -7,21 +12,13 @@ import Signup from "./pages/Signup";
 
 function App() {
 
+  const token = localStorage.getItem("token");
+
   return (
 
     <BrowserRouter>
 
       <Routes>
-
-        <Route
-          path="/"
-          element={<ComplaintForm />}
-        />
-
-        <Route
-          path="/complaints"
-          element={<ComplaintList />}
-        />
 
         <Route
           path="/login"
@@ -31,6 +28,24 @@ function App() {
         <Route
           path="/signup"
           element={<Signup />}
+        />
+
+        <Route
+          path="/"
+          element={
+            token
+              ? <ComplaintForm />
+              : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/complaints"
+          element={
+            token
+              ? <ComplaintList />
+              : <Navigate to="/login" />
+          }
         />
 
       </Routes>

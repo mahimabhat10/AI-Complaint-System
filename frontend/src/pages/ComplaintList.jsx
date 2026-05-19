@@ -5,6 +5,8 @@ function ComplaintList() {
 
   const [complaints, setComplaints] = useState([]);
 
+  const BASE_URL = "http://localhost:5000";
+
   useEffect(() => {
 
     fetchComplaints();
@@ -16,7 +18,7 @@ function ComplaintList() {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/complaints"
+        `${BASE_URL}/api/complaints`
       );
 
       setComplaints(res.data);
@@ -30,12 +32,21 @@ function ComplaintList() {
 
     try {
 
+      const token = localStorage.getItem("token");
+
       await axios.put(
-        `http://localhost:5000/api/complaints/${id}`,
+        `${BASE_URL}/api/complaints/${id}`,
         {
           status: "Resolved"
+        },
+        {
+          headers: {
+            Authorization: token
+          }
         }
       );
+
+      alert("Complaint Resolved");
 
       fetchComplaints();
 
@@ -44,13 +55,28 @@ function ComplaintList() {
     }
   };
 
+  const logout = () => {
+
+    localStorage.removeItem("token");
+
+    window.location.href = "/login";
+  };
+
   return (
 
     <div
       style={{
-        padding: "40px"
+        padding: "40px",
+        position: "relative"
       }}
     >
+
+      <button
+        onClick={logout}
+        className="logout-btn"
+      >
+        Logout
+      </button>
 
       <h1
         style={{
