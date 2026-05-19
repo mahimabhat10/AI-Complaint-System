@@ -1,276 +1,121 @@
-import { useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 
 function ComplaintForm() {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [recommendation, setRecommendation] = useState("");
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    title: "",
-    description: "",
-    category: "",
-    location: ""
-  });
+  // AI Recommendation Function
+  const generateRecommendation = (text) => {
+    const lowerText = text.toLowerCase();
 
-  const [aiResult, setAiResult] = useState(null);
+    if (
+      lowerText.includes("power") ||
+      lowerText.includes("electricity")
+    ) {
+      return "Check transformer and restore power supply.";
+    }
 
-  const BASE_URL =
-    "https://ai-complaint-backend-avcn.onrender.com";
+    else if (lowerText.includes("water")) {
+      return "Inspect pipeline and resolve water supply issue.";
+    }
 
-  const handleChange = (e) => {
+    else if (lowerText.includes("lift")) {
+      return "Send technician for lift maintenance.";
+    }
 
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+    else if (lowerText.includes("garbage")) {
+      return "Assign cleaning staff to clean the area.";
+    }
 
-  const handleSubmit = async (e) => {
+    else if (lowerText.includes("road")) {
+      return "Road repair team inspection required.";
+    }
 
-    e.preventDefault();
-
-    try {
-
-      const token = localStorage.getItem("token");
-
-      await axios.post(
-        `${BASE_URL}/api/complaints`,
-        formData,
-        {
-          headers: {
-            Authorization: token
-          }
-        }
-      );
-
-      // AI ANALYSIS LOGIC
-
-      let priority = "Low";
-
-      let department =
-        "General Department";
-
-      let autoResponse =
-        "Your complaint has been registered successfully.";
-
-      if (
-        formData.description
-          .toLowerCase()
-          .includes("water")
-      ) {
-
-        priority = "High";
-
-        department =
-          "Water Department";
-
-        autoResponse =
-          "Water department has been notified urgently.";
-      }
-
-      else if (
-        formData.description
-          .toLowerCase()
-          .includes("electricity")
-      ) {
-
-        priority = "High";
-
-        department =
-          "Electricity Department";
-
-        autoResponse =
-          "Electricity department will resolve the issue soon.";
-      }
-
-      else if (
-        formData.description
-          .toLowerCase()
-          .includes("garbage")
-      ) {
-
-        priority = "Medium";
-
-        department =
-          "Sanitation Department";
-
-        autoResponse =
-          "Sanitation team has been informed.";
-      }
-
-      else if (
-        formData.description
-          .toLowerCase()
-          .includes("road")
-      ) {
-
-        priority = "Medium";
-
-        department =
-          "Road Maintenance Department";
-
-        autoResponse =
-          "Road maintenance team will inspect the issue.";
-      }
-
-      setAiResult({
-
-        priority,
-
-        department,
-
-        summary:
-          formData.description.slice(0, 70) + "...",
-
-        response:
-          autoResponse
-      });
-
-      alert("Complaint Submitted Successfully");
-
-      setTimeout(() => {
-
-        window.location.href = "/complaints";
-
-      }, 5000);
-
-    } catch (error) {
-
-      console.log(error);
-
-      alert("Error submitting complaint");
+    else {
+      return "Issue forwarded to concerned department.";
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const aiSuggestion = generateRecommendation(
+      title + " " + description + " " + category
+    );
+
+    setRecommendation(aiSuggestion);
+
+    alert("Complaint Submitted Successfully!");
+  };
+
   return (
+    <div style={{ padding: "20px" }}>
+      <h1>Complaint Form</h1>
 
-    <div className="container">
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Complaint Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          style={{
+            display: "block",
+            marginBottom: "10px",
+            padding: "10px",
+            width: "300px",
+          }}
+        />
 
-      <div className="card">
+        <textarea
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
+          style={{
+            display: "block",
+            marginBottom: "10px",
+            padding: "10px",
+            width: "300px",
+            height: "100px",
+          }}
+        />
 
-        <h1 className="title">
-          Register Complaint
-        </h1>
+        <input
+          type="text"
+          placeholder="Category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          required
+          style={{
+            display: "block",
+            marginBottom: "10px",
+            padding: "10px",
+            width: "300px",
+          }}
+        />
 
-        <form onSubmit={handleSubmit}>
+        <button type="submit">
+          Submit Complaint
+        </button>
+      </form>
 
-          <input
-            type="text"
-            name="name"
-            placeholder="Enter Name"
-            onChange={handleChange}
-            className="input"
-            required
-          />
+      {recommendation && (
+        <div
+          style={{
+            marginTop: "20px",
+            padding: "15px",
+            border: "1px solid gray",
+            borderRadius: "10px",
+          }}
+        >
+          <h3>AI Recommendation</h3>
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Enter Email"
-            onChange={handleChange}
-            className="input"
-            required
-          />
-
-          <input
-            type="text"
-            name="title"
-            placeholder="Complaint Title"
-            onChange={handleChange}
-            className="input"
-            required
-          />
-
-          <textarea
-            name="description"
-            placeholder="Complaint Description"
-            onChange={handleChange}
-            className="input"
-            rows="4"
-            required
-          />
-
-          <input
-            type="text"
-            name="category"
-            placeholder="Complaint Category"
-            onChange={handleChange}
-            className="input"
-            required
-          />
-
-          <input
-            type="text"
-            name="location"
-            placeholder="Location"
-            onChange={handleChange}
-            className="input"
-            required
-          />
-
-          <button
-            type="submit"
-            className="button"
-          >
-            Submit Complaint
-          </button>
-
-        </form>
-
-        {
-
-          aiResult && (
-
-            <div
-              style={{
-                marginTop: "30px",
-                padding: "20px",
-                background: "#f3e8ff",
-                borderRadius: "15px",
-                border:
-                  "2px solid #d0bdf4"
-              }}
-            >
-
-              <h2
-                style={{
-                  color: "#7b2cbf",
-                  marginBottom: "15px"
-                }}
-              >
-                🤖 AI Powered Complaint Analysis
-              </h2>
-
-              <p>
-                <b>Priority:</b>
-                {" "}
-                {aiResult.priority}
-              </p>
-
-              <p>
-                <b>Recommended Department:</b>
-                {" "}
-                {aiResult.department}
-              </p>
-
-              <p>
-                <b>Complaint Summary:</b>
-                {" "}
-                {aiResult.summary}
-              </p>
-
-              <p>
-                <b>Auto Generated Response:</b>
-                {" "}
-                {aiResult.response}
-              </p>
-
-            </div>
-          )
-        }
-
-      </div>
-
+          <p>{recommendation}</p>
+        </div>
+      )}
     </div>
   );
 }
