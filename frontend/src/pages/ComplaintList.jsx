@@ -49,7 +49,7 @@ function ComplaintList() {
         }
       );
 
-      alert("Complaint Resolved");
+      alert("Complaint Resolved ✅");
 
       fetchComplaints();
 
@@ -167,21 +167,74 @@ function ComplaintList() {
             </p>
 
             <p>
-              <b>Status:</b> {complaint.status}
-            </p>
-
-            <p>
               <b>Location:</b> {complaint.location}
             </p>
 
-            <button
-              onClick={() =>
-                updateStatus(complaint._id)
+            <p>
+
+              <b>Status:</b>
+
+              {
+                complaint.status === "Resolved"
+
+                  ? (
+
+                    <span
+                      style={{
+                        color: "green",
+                        fontWeight: "bold",
+                        marginLeft: "10px"
+                      }}
+                    >
+                      ✅ Resolved
+                    </span>
+                  )
+
+                  : (
+
+                    <span
+                      style={{
+                        color: "orange",
+                        fontWeight: "bold",
+                        marginLeft: "10px"
+                      }}
+                    >
+                      Pending
+                    </span>
+                  )
               }
-              className="button"
-            >
-              Mark Resolved
-            </button>
+
+            </p>
+
+            {
+              complaint.status !== "Resolved"
+
+                ? (
+
+                  <button
+                    onClick={() =>
+                      updateStatus(complaint._id)
+                    }
+                    className="button"
+                  >
+                    Mark Resolved
+                  </button>
+                )
+
+                : (
+
+                  <button
+                    className="button"
+                    style={{
+                      background: "green",
+                      cursor: "default"
+                    }}
+                    disabled
+                  >
+                    Complaint Resolved ✅
+                  </button>
+                )
+            }
 
           </div>
         ))
