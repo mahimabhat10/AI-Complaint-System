@@ -1,10 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Login() {
-
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -37,11 +35,13 @@ function Login() {
 
       alert("Login Successful");
 
-      navigate("/");
+      window.location.href = "/";
 
     } catch (error) {
 
       console.log(error);
+
+      alert("Invalid Credentials");
     }
   };
 

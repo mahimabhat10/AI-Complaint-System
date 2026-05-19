@@ -1,10 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Signup() {
-
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -33,9 +31,10 @@ function Signup() {
 
       alert("Signup Successful");
 
-      navigate("/login");
+      window.location.href = "/login";
 
     } catch (error) {
+
       console.log(error);
     }
   };
