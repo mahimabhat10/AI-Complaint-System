@@ -5,7 +5,7 @@ function ComplaintList() {
 
   const [complaints, setComplaints] = useState([]);
 
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "https://ai-complaint-backend-avcn.onrender.com";
 
   useEffect(() => {
 
