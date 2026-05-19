@@ -1,198 +1,278 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import axios from "axios";
 
-const ComplaintForm = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
-  const [complaints, setComplaints] = useState([]);
-  const [recommendation, setRecommendation] = useState("");
+function ComplaintForm() {
 
-  const generateRecommendation = () => {
-    const text = `${title} ${description} ${category}`.toLowerCase();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    title: "",
+    description: "",
+    category: "",
+    location: ""
+  });
 
-    if (text.includes("lift")) {
-      return "Send technician for lift maintenance.";
-    }
+  const [aiResult, setAiResult] = useState(null);
 
-    if (
-      text.includes("power") ||
-      text.includes("electricity")
-    ) {
-      return "Check transformer and restore power supply.";
-    }
+  const BASE_URL =
+    "https://ai-complaint-backend-avcn.onrender.com";
 
-    if (text.includes("water")) {
-      return "Inspect water pipeline immediately.";
-    }
+  const handleChange = (e) => {
 
-    if (text.includes("garbage")) {
-      return "Assign cleaning staff immediately.";
-    }
-
-    if (text.includes("road")) {
-      return "Road repair team inspection required.";
-    }
-
-    return "Issue forwarded to concerned department.";
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
 
-    const aiSuggestion = generateRecommendation();
+    try {
 
-    setRecommendation(aiSuggestion);
+      const token = localStorage.getItem("token");
 
-    const newComplaint = {
-      id: Date.now(),
-      title,
-      description,
-      category,
-      location,
-      recommendation: aiSuggestion,
-      status: "Pending",
-    };
+      await axios.post(
+        `${BASE_URL}/api/complaints`,
+        formData,
+        {
+          headers: {
+            Authorization: token
+          }
+        }
+      );
 
-    setComplaints([...complaints, newComplaint]);
+      // AI ANALYSIS LOGIC
 
-    setTitle("");
-    setDescription("");
-    setCategory("");
-    setLocation("");
-  };
+      let priority = "Low";
 
-  const markResolved = (id) => {
-    const updatedComplaints = complaints.map((complaint) => {
-      if (complaint.id === id) {
-        return {
-          ...complaint,
-          status: "Resolved",
-        };
+      let department =
+        "General Department";
+
+      let autoResponse =
+        "Your complaint has been registered successfully.";
+
+      if (
+        formData.description
+          .toLowerCase()
+          .includes("water")
+      ) {
+
+        priority = "High";
+
+        department =
+          "Water Department";
+
+        autoResponse =
+          "Water department has been notified urgently.";
       }
 
-      return complaint;
-    });
+      else if (
+        formData.description
+          .toLowerCase()
+          .includes("electricity")
+      ) {
 
-    setComplaints(updatedComplaints);
+        priority = "High";
+
+        department =
+          "Electricity Department";
+
+        autoResponse =
+          "Electricity department will resolve the issue soon.";
+      }
+
+      else if (
+        formData.description
+          .toLowerCase()
+          .includes("garbage")
+      ) {
+
+        priority = "Medium";
+
+        department =
+          "Sanitation Department";
+
+        autoResponse =
+          "Sanitation team has been informed.";
+      }
+
+      else if (
+        formData.description
+          .toLowerCase()
+          .includes("road")
+      ) {
+
+        priority = "Medium";
+
+        department =
+          "Road Maintenance Department";
+
+        autoResponse =
+          "Road maintenance team will inspect the issue.";
+      }
+
+      setAiResult({
+
+        priority,
+
+        department,
+
+        summary:
+          formData.description.slice(0, 70) + "...",
+
+        response:
+          autoResponse
+      });
+
+      alert("Complaint Submitted Successfully");
+
+      setTimeout(() => {
+
+        window.location.href = "/complaints";
+
+      }, 5000);
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert("Error submitting complaint");
+    }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Complaint Form</h1>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Complaint Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+    <div className="container">
 
-        <br />
-        <br />
+      <div className="card">
 
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
+        <h1 className="title">
+          Register Complaint
+        </h1>
 
-        <br />
-        <br />
+        <form onSubmit={handleSubmit}>
 
-        <input
-          type="text"
-          placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-        />
+          <input
+            type="text"
+            name="name"
+            placeholder="Enter Name"
+            onChange={handleChange}
+            className="input"
+            required
+          />
 
-        <br />
-        <br />
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter Email"
+            onChange={handleChange}
+            className="input"
+            required
+          />
 
-        <input
-          type="text"
-          placeholder="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          required
-        />
+          <input
+            type="text"
+            name="title"
+            placeholder="Complaint Title"
+            onChange={handleChange}
+            className="input"
+            required
+          />
 
-        <br />
-        <br />
+          <textarea
+            name="description"
+            placeholder="Complaint Description"
+            onChange={handleChange}
+            className="input"
+            rows="4"
+            required
+          />
 
-        <button type="submit">
-          Submit Complaint
-        </button>
-      </form>
+          <input
+            type="text"
+            name="category"
+            placeholder="Complaint Category"
+            onChange={handleChange}
+            className="input"
+            required
+          />
 
-      {recommendation && (
-        <div style={{ marginTop: "20px" }}>
-          <h3>AI Recommendation</h3>
-          <p>{recommendation}</p>
-        </div>
-      )}
+          <input
+            type="text"
+            name="location"
+            placeholder="Location"
+            onChange={handleChange}
+            className="input"
+            required
+          />
 
-      <hr />
+          <button
+            type="submit"
+            className="button"
+          >
+            Submit Complaint
+          </button>
 
-      <h2>Complaints</h2>
+        </form>
 
-      {complaints.map((complaint) => (
-        <div
-          key={complaint.id}
-          style={{
-            border: "1px solid gray",
-            padding: "10px",
-            marginBottom: "10px",
-            borderRadius: "10px",
-          }}
-        >
-          <h3>{complaint.title}</h3>
+        {
 
-          <p>
-            <strong>Description:</strong>{" "}
-            {complaint.description}
-          </p>
+          aiResult && (
 
-          <p>
-            <strong>Category:</strong>{" "}
-            {complaint.category}
-          </p>
-
-          <p>
-            <strong>Location:</strong>{" "}
-            {complaint.location}
-          </p>
-
-          <p>
-            <strong>AI Recommendation:</strong>{" "}
-            {complaint.recommendation}
-          </p>
-
-          <p>
-            <strong>Status:</strong>{" "}
-            {complaint.status === "Resolved"
-              ? "✅ Resolved"
-              : "⏳ Pending"}
-          </p>
-
-          {complaint.status !== "Resolved" && (
-            <button
-              onClick={() =>
-                markResolved(complaint.id)
-              }
+            <div
+              style={{
+                marginTop: "30px",
+                padding: "20px",
+                background: "#f3e8ff",
+                borderRadius: "15px",
+                border:
+                  "2px solid #d0bdf4"
+              }}
             >
-              Mark Resolved
-            </button>
-          )}
-        </div>
-      ))}
+
+              <h2
+                style={{
+                  color: "#7b2cbf",
+                  marginBottom: "15px"
+                }}
+              >
+                🤖 AI Powered Complaint Analysis
+              </h2>
+
+              <p>
+                <b>Priority:</b>
+                {" "}
+                {aiResult.priority}
+              </p>
+
+              <p>
+                <b>Recommended Department:</b>
+                {" "}
+                {aiResult.department}
+              </p>
+
+              <p>
+                <b>Complaint Summary:</b>
+                {" "}
+                {aiResult.summary}
+              </p>
+
+              <p>
+                <b>Auto Generated Response:</b>
+                {" "}
+                {aiResult.response}
+              </p>
+
+            </div>
+          )
+        }
+
+      </div>
+
     </div>
   );
-};
+}
 
 export default ComplaintForm;
