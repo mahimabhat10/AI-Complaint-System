@@ -6,33 +6,40 @@ const ComplaintForm = () => {
   const [category, setCategory] = useState("");
   const [recommendation, setRecommendation] = useState("");
 
-  const generateRecommendation = () => {
-    const text = `${title} ${description} ${category}`.toLowerCase();
-
-    if (text.includes("lift")) {
-      return "Send technician for lift maintenance.";
-    }
-
-    if (text.includes("power") || text.includes("electricity")) {
-      return "Check transformer and restore power supply.";
-    }
-
-    if (text.includes("water")) {
-      return "Inspect water pipeline immediately.";
-    }
-
-    return "Issue forwarded to concerned department.";
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const aiSuggestion = generateRecommendation();
-    setRecommendation(aiSuggestion);
+    let aiRecommendation =
+      "Issue forwarded to concerned department.";
+
+    const text =
+      `${title} ${description} ${category}`.toLowerCase();
+
+    if (text.includes("lift")) {
+      aiRecommendation =
+        "Send technician for lift maintenance.";
+    }
+
+    if (
+      text.includes("power") ||
+      text.includes("electricity")
+    ) {
+      aiRecommendation =
+        "Check transformer and restore power supply.";
+    }
+
+    if (text.includes("water")) {
+      aiRecommendation =
+        "Inspect water pipeline immediately.";
+    }
+
+    setRecommendation(aiRecommendation);
+
+    alert("Complaint Submitted Successfully");
   };
 
   return (
-    <div className="container">
+    <div>
       <h1>Complaint Form</h1>
 
       <form onSubmit={handleSubmit}>
@@ -69,7 +76,7 @@ const ComplaintForm = () => {
 
       {recommendation && (
         <div style={{ marginTop: "20px" }}>
-          <h3>AI Recommendation:</h3>
+          <h3>AI Recommendation</h3>
           <p>{recommendation}</p>
         </div>
       )}
