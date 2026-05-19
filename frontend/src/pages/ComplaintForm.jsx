@@ -12,11 +12,6 @@ function ComplaintForm() {
     location: ""
   });
 
-  const [aiResult, setAiResult] = useState(null);
-
-  const BASE_URL =
-    "https://ai-complaint-backend-avcn.onrender.com";
-
   const handleChange = (e) => {
 
     setFormData({
@@ -34,7 +29,7 @@ function ComplaintForm() {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        `${BASE_URL}/api/complaints`,
+        "https://ai-complaint-backend-avcn.onrender.com/api/complaints";
         formData,
         {
           headers: {
@@ -43,102 +38,13 @@ function ComplaintForm() {
         }
       );
 
-      // AI ANALYSIS LOGIC
+      alert("Complaint Submitted");
 
-      let priority = "Low";
-
-      let department =
-        "General Department";
-
-      let autoResponse =
-        "Your complaint has been registered successfully.";
-
-      if (
-        formData.description
-          .toLowerCase()
-          .includes("water")
-      ) {
-
-        priority = "High";
-
-        department =
-          "Water Department";
-
-        autoResponse =
-          "Water department has been notified urgently.";
-      }
-
-      else if (
-        formData.description
-          .toLowerCase()
-          .includes("electricity")
-      ) {
-
-        priority = "High";
-
-        department =
-          "Electricity Department";
-
-        autoResponse =
-          "Electricity department will resolve the issue soon.";
-      }
-
-      else if (
-        formData.description
-          .toLowerCase()
-          .includes("garbage")
-      ) {
-
-        priority = "Medium";
-
-        department =
-          "Sanitation Department";
-
-        autoResponse =
-          "Sanitation team has been informed.";
-      }
-
-      else if (
-        formData.description
-          .toLowerCase()
-          .includes("road")
-      ) {
-
-        priority = "Medium";
-
-        department =
-          "Road Maintenance Department";
-
-        autoResponse =
-          "Road maintenance team will inspect the issue.";
-      }
-
-      setAiResult({
-
-        priority,
-
-        department,
-
-        summary:
-          formData.description.slice(0, 70) + "...",
-
-        response:
-          autoResponse
-      });
-
-      alert("Complaint Submitted Successfully");
-
-      setTimeout(() => {
-
-        window.location.href = "/complaints";
-
-      }, 5000);
+      window.location.href = "/complaints";
 
     } catch (error) {
 
       console.log(error);
-
-      alert("Error submitting complaint");
     }
   };
 
@@ -160,7 +66,6 @@ function ComplaintForm() {
             placeholder="Enter Name"
             onChange={handleChange}
             className="input"
-            required
           />
 
           <input
@@ -169,7 +74,6 @@ function ComplaintForm() {
             placeholder="Enter Email"
             onChange={handleChange}
             className="input"
-            required
           />
 
           <input
@@ -178,7 +82,6 @@ function ComplaintForm() {
             placeholder="Complaint Title"
             onChange={handleChange}
             className="input"
-            required
           />
 
           <textarea
@@ -187,16 +90,14 @@ function ComplaintForm() {
             onChange={handleChange}
             className="input"
             rows="4"
-            required
           />
 
           <input
             type="text"
             name="category"
-            placeholder="Complaint Category"
+            placeholder="Category"
             onChange={handleChange}
             className="input"
-            required
           />
 
           <input
@@ -205,7 +106,6 @@ function ComplaintForm() {
             placeholder="Location"
             onChange={handleChange}
             className="input"
-            required
           />
 
           <button
@@ -216,58 +116,6 @@ function ComplaintForm() {
           </button>
 
         </form>
-
-        {
-
-          aiResult && (
-
-            <div
-              style={{
-                marginTop: "30px",
-                padding: "20px",
-                background: "#f3e8ff",
-                borderRadius: "15px",
-                border:
-                  "2px solid #d0bdf4"
-              }}
-            >
-
-              <h2
-                style={{
-                  color: "#7b2cbf",
-                  marginBottom: "15px"
-                }}
-              >
-                🤖 AI Powered Complaint Analysis
-              </h2>
-
-              <p>
-                <b>Priority:</b>
-                {" "}
-                {aiResult.priority}
-              </p>
-
-              <p>
-                <b>Recommended Department:</b>
-                {" "}
-                {aiResult.department}
-              </p>
-
-              <p>
-                <b>Complaint Summary:</b>
-                {" "}
-                {aiResult.summary}
-              </p>
-
-              <p>
-                <b>Auto Generated Response:</b>
-                {" "}
-                {aiResult.response}
-              </p>
-
-            </div>
-          )
-        }
 
       </div>
 
