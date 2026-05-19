@@ -4,8 +4,11 @@ import axios from "axios";
 function ComplaintList() {
 
   const [complaints, setComplaints] = useState([]);
+  const [searchLocation, setSearchLocation] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
-  const BASE_URL = "https://ai-complaint-backend-avcn.onrender.com";
+  const BASE_URL =
+    "https://ai-complaint-backend-avcn.onrender.com";
 
   useEffect(() => {
 
@@ -62,6 +65,22 @@ function ComplaintList() {
     window.location.href = "/login";
   };
 
+  const filteredComplaints = complaints.filter((complaint) => {
+
+    return (
+
+      complaint.location
+        .toLowerCase()
+        .includes(searchLocation.toLowerCase())
+
+      &&
+
+      complaint.category
+        .toLowerCase()
+        .includes(categoryFilter.toLowerCase())
+    );
+  });
+
   return (
 
     <div
@@ -83,14 +102,44 @@ function ComplaintList() {
           textAlign: "center",
           color: "#7b2cbf",
           fontSize: "45px",
-          marginBottom: "40px"
+          marginBottom: "30px"
         }}
       >
         Complaint List
       </h1>
 
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          marginBottom: "30px"
+        }}
+      >
+
+        <input
+          type="text"
+          placeholder="Search by Location"
+          value={searchLocation}
+          onChange={(e) =>
+            setSearchLocation(e.target.value)
+          }
+          className="input"
+        />
+
+        <input
+          type="text"
+          placeholder="Filter by Category"
+          value={categoryFilter}
+          onChange={(e) =>
+            setCategoryFilter(e.target.value)
+          }
+          className="input"
+        />
+
+      </div>
+
       {
-        complaints.map((complaint) => (
+        filteredComplaints.map((complaint) => (
 
           <div
             key={complaint._id}
@@ -100,7 +149,8 @@ function ComplaintList() {
               padding: "25px",
               borderRadius: "20px",
               marginBottom: "25px",
-              boxShadow: "0px 5px 15px rgba(0,0,0,0.1)"
+              boxShadow:
+                "0px 5px 15px rgba(0,0,0,0.1)"
             }}
           >
 
@@ -113,6 +163,10 @@ function ComplaintList() {
             </p>
 
             <p>
+              <b>Category:</b> {complaint.category}
+            </p>
+
+            <p>
               <b>Status:</b> {complaint.status}
             </p>
 
@@ -121,7 +175,9 @@ function ComplaintList() {
             </p>
 
             <button
-              onClick={() => updateStatus(complaint._id)}
+              onClick={() =>
+                updateStatus(complaint._id)
+              }
               className="button"
             >
               Mark Resolved
